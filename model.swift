@@ -1,3 +1,12 @@
+//
+//  CalorieModel.swift
+//  singledOutCaloriePage
+//
+//  Created by Rob Maltese on 5/24/21.
+//
+
+import SwiftUI
+
 enum GenderPickerSelector: String, CaseIterable {
     case male
     case female
@@ -57,11 +66,10 @@ struct ViewOneData {
     var showAlert = false
     
     // Referencing other data model.
-    var userData: UserData = UserData()
+//    var userData: UserData = UserData()
 }
 
 struct UserData {
-    var dailyCalories: Double = 0.0
     
     // Sliders
     var carbohydrateSlider = 50.0
@@ -76,15 +84,27 @@ struct UserData {
     var carbsOutputText = 0.0
     var fatsOutputText = 0.0
     var proteinOutputText = 0.0
-
-    // TextField Inputs?
-    @Binding var ageInput: String  = ""
-    @State var weightInput = ""
-    @State var heightInFeet = ""
-    @State var heightInInches = ""
 }
 
-extension UserData {
+struct UserInputData {
+    var dailyCalories: Double = 0.0
+
+    // TextField Inputs?
+     @Binding var ageInput: Int
+     @Binding var weightInput: Int
+     @Binding var heightInFeet: Int
+     @Binding var heightInInches: Int
+    
+    init(ageInput: Binding<Int>, weightInput: Binding<Int>, heightInFeet: Binding<Int>, heightInInches: Binding<Int>) {
+        self._ageInput = ageInput
+        self._weightInput = weightInput
+        self._heightInFeet = heightInFeet
+        self._heightInInches = heightInInches
+    }
+}
+
+extension UserInputData {
+    
     func carbohydrateMath() -> Double {
         let defaultCarbohydratesValue: Double = 0.50
         let getCarbCalories = dailyCalories * defaultCarbohydratesValue
@@ -110,8 +130,8 @@ extension UserData {
     }
     
     func convertHeight() -> Double {
-        let convertHeight = Double(heightInFeet)! * 12
-        let addInches = convertHeight + Double(heightInInches)!
+        let convertHeight = Double() * 12
+        let addInches = convertHeight + Double(heightInInches)
         
         let centimetersReturn = addInches * 2.54
         
@@ -120,8 +140,8 @@ extension UserData {
     }
     
     func convertPoundsToKg() -> Double {
-        guard let userWeightInput = Double(weightInput) else { return 0.0 }
-        let performConversion = userWeightInput / 2.2046 // Number is the conversion number.
+        let userWeightInput = weightInput
+        let performConversion = userWeightInput // 2.2046 // Number is the conversion number.
         
         return Double(performConversion)
     }
@@ -132,8 +152,8 @@ extension UserData {
         
         let stepOne = 10 * weightConversionFunction
         let stepTwo = 6.25 * heightConversionFunction
-        let stepThree = 5 * Double(ageInput)! // Age in Years.
-        let stepFour = stepOne + stepTwo - stepThree + 5
+        let stepThree = 5 * Double(ageInput) // Age in Years.
+        let stepFour = Double(stepOne + stepTwo) - stepThree + 5
         let stepFive = stepFour - chosenValue.rawValue
         
         return Double(stepFive)
@@ -145,12 +165,13 @@ extension UserData {
         
         let stepOne = 10 * weightConversionFunction
         let stepTwo = 6.25 * heightConversionFunction
-        let stepThree = 5 * Double(ageInput)! // Age in Years.
+        let stepThree = 5 * Double(ageInput) // Age in Years.
         let stepFour = stepOne + stepTwo - stepThree - 161
         
         return Double(stepFour)
     }
 }
+
 
 class ViewOneObject: ObservableObject {
     @Published var viewOneData: ViewOneData
@@ -159,3 +180,5 @@ class ViewOneObject: ObservableObject {
         self.viewOneData = viewOneData
     }
 }
+
+
